@@ -1,0 +1,24 @@
+[
+  {
+    "id": "8562c6c6-1960-4ee2-aeb2-6da2b4e8b21a",
+    "title": "清爽大海边",
+    "imageUrl": "http://localhost:9091/uploads/c1042dc1-50f1-4f69-9d2e-0f57ae3856f8.jpg",
+    "listType": "red",
+    "rating": 4,
+    "description": "很凉爽",
+    "price": 800,
+    "category": "",
+    "createdAt": "2026-05-09T14:48:49.735Z"
+  },
+  {
+    "id": "3417c9a7-c8c6-4764-902a-637f605330a4",
+    "title": "麻辣小空空",
+    "imageUrl": "http://localhost:9091/uploads/46f748db-cd09-4bfe-8638-754be8df9038.jpg",
+    "listType": "red",
+    "rating": 5,
+    "description": "好吃",
+    "price": 9999,
+    "category": "",
+    "createdAt": "2026-05-09T14:38:15.250Z"
+  }
+]

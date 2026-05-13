@@ -1,0 +1,5 @@
+packages:
+  - 'client'
+  - 'server'
+allowBuilds:
+  '@alicloud/openapi-core': true
