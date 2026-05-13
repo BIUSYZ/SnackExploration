@@ -61,7 +61,11 @@ export default function AddSnackScreen() {
     if (Platform.OS === 'web') {
       const response = await fetch(localUri);
       const blob = await response.blob();
-      formData.append('image', new File([blob], `photo_${Date.now()}.jpg`, { type: blob.type }));
+      // 手机端浏览器（尤其是 iOS Safari 或微信内建浏览器）拍照后，blob.type 可能会丢失为空
+      // 这会导致后端 Multer fileFilter 拦截并报错。这里强制增加默认 fallback 类型。
+      const mimeType = blob.type || 'image/jpeg';
+      const file = new File([blob], `photo_${Date.now()}.jpg`, { type: mimeType });
+      formData.append('image', file);
     } else {
       const filename = localUri.split('/').pop() || 'photo.jpg';
       formData.append('image', { uri: localUri, name: filename, type: 'image/jpeg' } as any);
