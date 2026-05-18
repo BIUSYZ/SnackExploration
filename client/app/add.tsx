@@ -22,6 +22,8 @@ export default function AddSnackScreen() {
   const [ocrTokens, setOcrTokens] = useState<string[]>([]);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
   const [remoteImageUrl, setRemoteImageUrl] = useState('');
+  const [priceType, setPriceType] = useState<'normal' | 'bulk' | 'forgot'>('normal');
+  const [unit, setUnit] = useState('斤');
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -93,7 +95,9 @@ export default function AddSnackScreen() {
         rating, 
         imageUrl: finalImageUrl,
         description: description || undefined,
-        price: price ? Number(price) : undefined,
+        price: (priceType !== 'forgot' && price) ? Number(price) : undefined,
+        priceType,
+        unit: priceType === 'bulk' ? unit : undefined,
       });
       router.back();
     } catch (error) {
@@ -162,37 +166,69 @@ export default function AddSnackScreen() {
             placeholder="这一刻吃的是什么？"
             placeholderTextColor={COLORS.textMuted}
           />
+          <Text style={styles.label}>所属榜单</Text>
+          <View style={styles.filterBar}>
+            <Pressable 
+              style={[styles.filterBtn, listType === 'red' && { backgroundColor: COLORS.redList }]}
+              onPress={() => setListType('red')}
+            >
+              <Text style={[styles.filterText, listType === 'red' && { color: '#FFF' }]}>红榜</Text>
+            </Pressable>
+            <Pressable 
+              style={[styles.filterBtn, listType === 'black' && { backgroundColor: COLORS.blackList }]}
+              onPress={() => setListType('black')}
+            >
+              <Text style={[styles.filterText, listType === 'black' && { color: '#FFF' }]}>黑榜</Text>
+            </Pressable>
+          </View>
 
-          <View style={styles.row}>
-            <View style={{ flex: 1.2 }}>
-              <Text style={styles.label}>所属榜单</Text>
-              <View style={styles.filterBar}>
+          <View style={styles.priceSection}>
+            <Text style={styles.label}>价格记录</Text>
+            <View style={styles.tabBar}>
+              {[
+                { key: 'normal', label: '正常' },
+                { key: 'bulk', label: '散称' },
+                { key: 'forgot', label: '忘了' }
+              ].map(tab => (
                 <Pressable 
-                  style={[styles.filterBtn, listType === 'red' && { backgroundColor: COLORS.redList }]}
-                  onPress={() => setListType('red')}
+                  key={tab.key}
+                  style={[styles.tabBtn, priceType === tab.key && styles.tabBtnActive]}
+                  onPress={() => setPriceType(tab.key as any)}
                 >
-                  <Text style={[styles.filterText, listType === 'red' && { color: '#FFF' }]}>红榜</Text>
+                  <Text style={[styles.tabText, priceType === tab.key && styles.tabTextActive]}>{tab.label}</Text>
                 </Pressable>
-                <Pressable 
-                  style={[styles.filterBtn, listType === 'black' && { backgroundColor: COLORS.blackList }]}
-                  onPress={() => setListType('black')}
-                >
-                  <Text style={[styles.filterText, listType === 'black' && { color: '#FFF' }]}>黑榜</Text>
-                </Pressable>
+              ))}
+            </View>
+
+            {priceType !== 'forgot' && (
+              <View style={styles.priceInputRow}>
+                <View style={{ flex: 1 }}>
+                  <TextInput 
+                    style={[styles.input, { marginBottom: 0, paddingLeft: 32 }]} 
+                    value={price} 
+                    onChangeText={setPrice} 
+                    placeholder="0.00"
+                    keyboardType="numeric"
+                    placeholderTextColor={COLORS.textMuted}
+                  />
+                  <Text style={styles.pricePrefix}>¥</Text>
+                </View>
+                
+                {priceType === 'bulk' && (
+                  <View style={styles.unitPicker}>
+                    {['斤', '两', '克', '500g'].map(u => (
+                      <Pressable 
+                        key={u} 
+                        style={[styles.unitBtn, unit === u && styles.unitBtnActive]}
+                        onPress={() => setUnit(u)}
+                      >
+                        <Text style={[styles.unitText, unit === u && styles.unitTextActive]}>{u}</Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                )}
               </View>
-            </View>
-            <View style={{ width: 16 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={styles.label}>价格 (¥)</Text>
-              <TextInput 
-                style={styles.input} 
-                value={price} 
-                onChangeText={setPrice} 
-                placeholder="0.00"
-                keyboardType="numeric"
-                placeholderTextColor={COLORS.textMuted}
-              />
-            </View>
+            )}
           </View>
 
           <Text style={styles.label}>打分</Text>
@@ -352,14 +388,83 @@ const styles = StyleSheet.create({
   },
   filterBtn: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
   },
   filterText: {
     fontFamily: 'Inter_600SemiBold',
-    fontSize: 12,
+    fontSize: 13,
     color: COLORS.textSecondary,
+  },
+  priceSection: {
+    marginBottom: 20,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.surfaceWarm,
+    borderRadius: 12,
+    padding: 3,
+    marginBottom: 12,
+  },
+  tabBtn: {
+    flex: 1,
+    paddingVertical: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  tabBtnActive: {
+    backgroundColor: COLORS.surface,
+    ...SHADOWS.light,
+  },
+  tabText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
+    color: COLORS.textMuted,
+  },
+  tabTextActive: {
+    color: COLORS.primary,
+    fontFamily: 'Inter_600SemiBold',
+  },
+  priceInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  pricePrefix: {
+    position: 'absolute',
+    left: 16,
+    top: 12,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 15,
+    color: COLORS.textSecondary,
+  },
+  unitPicker: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    flex: 1,
+  },
+  unitBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: COLORS.surfaceWarm,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  unitBtnActive: {
+    backgroundColor: COLORS.primaryLight,
+    borderColor: COLORS.primary,
+  },
+  unitText: {
+    fontSize: 11,
+    fontFamily: 'Inter_500Medium',
+    color: COLORS.textSecondary,
+  },
+  unitTextActive: {
+    color: COLORS.primary,
+    fontFamily: 'Inter_600SemiBold',
   },
   ratingBox: {
     alignItems: 'center',

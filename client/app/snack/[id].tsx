@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Pressable, ActivityIndicator, Alert, ActionSheetIOS, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { api } from '../../lib/api';
+import { api, getImageUrl } from '../../lib/api';
 import { useSnackStore, Snack } from '../../lib/store';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, LAYOUT, SHADOWS } from '../../constants/Theme';
@@ -33,21 +33,39 @@ export default function SnackDetailScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      '确定删除吗？',
-      '删除后无法恢复哦',
-      [
-        { text: '取消', style: 'cancel' },
-        { 
-          text: '确定删除', 
-          style: 'destructive',
-          onPress: async () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['取消', '确定删除'],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+          title: '确定删除吗？',
+          message: '删除后无法恢复哦',
+        },
+        async (buttonIndex) => {
+          if (buttonIndex === 1) {
             await deleteSnack(id as string);
             router.back();
           }
-        },
-      ]
-    );
+        }
+      );
+    } else {
+      Alert.alert(
+        '确定删除吗？',
+        '删除后无法恢复哦',
+        [
+          { text: '取消', style: 'cancel' },
+          { 
+            text: '确定删除', 
+            style: 'destructive',
+            onPress: async () => {
+              await deleteSnack(id as string);
+              router.back();
+            }
+          },
+        ]
+      );
+    }
   };
 
   if (loading) {
@@ -80,7 +98,7 @@ export default function SnackDetailScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.imageCard}>
-          <Image source={{ uri: snack.imageUrl }} style={styles.image} resizeMode="cover" />
+          <Image source={{ uri: getImageUrl(snack.imageUrl) }} style={styles.image} resizeMode="cover" />
           <View style={[styles.badge, { backgroundColor: snack.listType === 'red' ? COLORS.redList : COLORS.blackList }]}>
             <Text style={styles.badgeText}>{snack.listType === 'red' ? '红榜' : '黑榜'}</Text>
           </View>
@@ -89,11 +107,17 @@ export default function SnackDetailScreen() {
         <View style={styles.infoSection}>
           <View style={styles.titleRow}>
             <Text style={styles.title}>{snack.title}</Text>
-            {snack.price && (
+            {snack.priceType === 'forgot' ? (
               <View style={styles.priceTag}>
-                <Text style={styles.priceText}>¥{snack.price}</Text>
+                <Text style={styles.priceText}>价格忘了</Text>
               </View>
-            )}
+            ) : snack.price != null ? (
+              <View style={styles.priceTag}>
+                <Text style={styles.priceText}>
+                  ¥{snack.price}{snack.priceType === 'bulk' && snack.unit ? ` / ${snack.unit}` : ''}
+                </Text>
+              </View>
+            ) : null}
           </View>
           
           <View style={styles.ratingBox}>

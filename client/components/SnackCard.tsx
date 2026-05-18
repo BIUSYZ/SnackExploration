@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import { COLORS, LAYOUT, SHADOWS } from '../constants/Theme';
 import { CustomStar, CustomSkull } from './CustomIcons';
 import { useRouter } from 'expo-router';
+import { getImageUrl } from '../lib/api';
 
 interface SnackCardProps {
   id: string;
@@ -24,7 +25,7 @@ export default function SnackCard({ id, title, imageUrl, rating, listType }: Sna
       onPress={() => router.push(`/snack/${id}`)}
     >
       <View style={styles.imageContainer}>
-        <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
+        <Image source={{ uri: getImageUrl(imageUrl) }} style={styles.image} resizeMode="cover" />
       </View>
       <View style={styles.info}>
         <Text style={styles.title} numberOfLines={1}>{title}</Text>

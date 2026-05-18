@@ -9,6 +9,8 @@ export interface Snack {
   listType: 'red' | 'black';
   description?: string;
   price?: number;
+  unit?: string;
+  priceType?: 'normal' | 'bulk' | 'forgot';
   category?: string;
   location?: string;
   createdAt?: string;

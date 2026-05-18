@@ -1,20 +1,21 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "零食记",
+    "slug": "snack-rater",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "client",
+    "scheme": "snackrater",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FBF8F3"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.biusyz.snackrater"
     },
     "android": {
       "adaptiveIcon": {

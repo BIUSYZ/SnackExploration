@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, SHADOWS, LAYOUT } from '../constants/Theme';
 import { ChevronLeft, Check, Shield, Settings as SettingsIcon, Info } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../lib/api';
 
 export default function SettingsScreen() {
@@ -123,6 +124,16 @@ export default function SettingsScreen() {
           <View style={styles.emptyState}>
             <SettingsIcon size={48} color={COLORS.border} strokeWidth={1} />
             <Text style={styles.emptyText}>更多个人功能正在赶来...</Text>
+            
+            <Pressable 
+              style={{ marginTop: 40, padding: 12, backgroundColor: COLORS.surfaceWarm, borderRadius: 12, borderWidth: 1, borderColor: COLORS.border }}
+              onPress={async () => {
+                await AsyncStorage.removeItem('snack_token');
+                router.replace('/login');
+              }}
+            >
+              <Text style={{ fontFamily: 'Inter_600SemiBold', color: COLORS.redList }}>退出登录</Text>
+            </Pressable>
           </View>
         )}
       </ScrollView>

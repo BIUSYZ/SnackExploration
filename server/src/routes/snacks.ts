@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { title, imageUrl, listType, rating, description, price, category } = req.body;
+  const { title, imageUrl, listType, rating, description, price, category, priceType, unit } = req.body;
   
   if (!title || !imageUrl || !listType || !rating) {
     return res.status(400).json({ success: false, error: 'Missing required fields' });
@@ -59,6 +59,8 @@ router.post('/', (req, res) => {
     rating: Number(rating),
     description: description || '',
     price: price != null ? Number(price) : null,
+    priceType: priceType || 'normal',
+    unit: unit || '',
     category: category || '',
     createdAt: new Date().toISOString()
   };

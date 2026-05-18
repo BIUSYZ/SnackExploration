@@ -54,6 +54,7 @@ export default function HomeScreen() {
           key={numColumns}
           data={snacks}
           renderItem={({ item }) => <SnackCard {...item} />}
+          // @ts-expect-error Types mismatch in FlashList 2.x
           estimatedItemSize={250}
           numColumns={numColumns}
           contentContainerStyle={styles.listContent}
