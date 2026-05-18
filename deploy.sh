@@ -9,7 +9,7 @@ echo "====================================="
 
 # 1. 拉取最新代码
 echo "📦 1. 拉取最新代码..."
-git pull origin main
+git pull origin master
 
 # 2. 部署后端
 echo "⚙️ 2. 开始构建后端服务..."
